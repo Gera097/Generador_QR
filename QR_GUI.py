@@ -23,13 +23,18 @@ event, values = sg.Window('Generador_QR', layout).read(close=True)
 #Leer datos del archivo desde la ruta seleccionada por el usuario
 nombre_archivo, extension = os.path.splitext(str(values["-FILE-"]))
 
+
 if extension == ".csv":
-     datos = pd.read_csv(values["-FILE-"])
+    datos = pd.read_csv(values["-FILE-"])
 
 elif extension == ".xlsx":
     datos = pd.read_excel(values["-FILE-"])
 else: 
     sg.popup("No se eligió un tipo de archivo permitido", title = "Error")
+
+# except UnicodeDecodeError:
+#     sg.popup("El archivo elegido tiene problemas de decodificación, pruebe otro formato, como csv utf-8", title = "Error")
+    
 
 #Elegir columna que se desea convertir a QR
 diccionario_de_datos = datos.to_dict()
@@ -57,16 +62,26 @@ window.close()
 #Creación de carpeta para la columna seleccionada
 nombre_columna = str(columna_elegida).title()
 nombre_carpeta = nombre_columna.upper().replace(" ","_")+"_QR"
-if nombre_carpeta not in os.listdir("./"):
-    os.makedirs(nombre_carpeta)
+
+if "resultados" not in os.listdir("/"):
+    os.makedirs("resultados")
+
+if nombre_carpeta not in os.listdir("./resultados"):
+    os.makedirs("./resultados/" + nombre_carpeta)
 
 #Creación de códigos QR para la columna seleccionada en el directorio elegido
 def generar_qr(diccionario_de_datos, columna_elegida, nombre_carpeta = ""):
     for index,dato in enumerate(diccionario_de_datos[columna_elegida].values()):
         imagen = qrcode.make(str(dato))
-        f = open(nombre_carpeta+"./"+nombre_columna+"_"+str(index)+".png","wb")
+        f = open("./resultados/" + nombre_carpeta+"/"+nombre_columna+"_"+str(index)+".png","wb")
         imagen.save(f)
         f.close()
+    return index+1
+    
+n_datos = generar_qr(diccionario_de_datos, columna_elegida, nombre_carpeta)
 
-generar_qr(diccionario_de_datos, columna_elegida, nombre_carpeta)
+layout = [[sg.Text("Los códigos QR fueron generados en la carpeta: " + nombre_carpeta)],
+            [sg.Text("Se crearon: " + str(n_datos) + "QRs")],
+            [sg.Text("En la dirección: " + str(os.getcwd()))]]
 
+event, values = sg.Window('Generador_QR', layout).read(close=True)
