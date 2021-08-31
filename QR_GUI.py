@@ -86,12 +86,16 @@ if nombre_carpeta not in os.listdir("./resultados"):
 
 #Creación de códigos QR para la columna seleccionada en el directorio elegido
 def generar_qr(diccionario_de_datos, columna_elegida, nombre_carpeta = ""):
-    for index,dato in enumerate(diccionario_de_datos[columna_elegida].values()):
-        imagen = qrcode.make(str(dato))
-        f = open("./resultados/" + nombre_carpeta+"/"+nombre_columna+"_"+str(index)+".png","wb")
-        imagen.save(f)
-        f.close()
-    return index+1
+    index = 0
+    for dato in diccionario_de_datos[columna_elegida].values():
+        if dato:
+            imagen = qrcode.make(str(dato))
+            f = open("./resultados/" + nombre_carpeta+"/"+nombre_columna+"_"+str(index)+".png","wb")
+            imagen.save(f)
+            f.close()
+            index += 1
+            
+    return index
     
 n_datos = generar_qr(diccionario_de_datos, columna_elegida, nombre_carpeta)
 
