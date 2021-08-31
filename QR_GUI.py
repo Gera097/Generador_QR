@@ -63,7 +63,7 @@ window.close()
 nombre_columna = str(columna_elegida).title()
 nombre_carpeta = nombre_columna.upper().replace(" ","_")+"_QR"
 
-if "resultados" not in os.listdir("/"):
+if "resultados" not in os.listdir("./"):
     os.makedirs("resultados")
 
 if nombre_carpeta not in os.listdir("./resultados"):
