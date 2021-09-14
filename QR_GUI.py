@@ -11,7 +11,10 @@ FILETYPES = (("Libro de Excel", "*.xlsx"),("Archivo CSV", "*.csv"))
 #Recipe - Get Filename With No Input Display. Returns when file selected
 sg.theme()
 
-layout = [[sg.Text('Elige un archivo con extensión CSV o un Libro de Excel')],
+layout = [[sg.Text('Introduce el texto que deseas covertir en QR: ')],
+          [sg.Input(key='-INPUT_TEXT-'),sg.Button('Ok')],
+          [sg.Text('O')],
+          [sg.Text('Elige un archivo con extensión CSV o un Libro de Excel')],
           [sg.Input(key='-FILE-', visible=False, enable_events=True), sg.FileBrowse(button_text='Buscar',file_types=(FILETYPES),pad = (150,10))],
           [sg.Text("Elegiste: "),sg.Text(size=(30,1), key='-ARCHIVO_ELEGIDO-')],
           [sg.Button('Continuar')]]
@@ -26,15 +29,43 @@ while True:                  # the event loop
     if event == '-FILE-':
         nombre_archivo = values['-FILE-'].split("/")
         window_buscar_archivo['-ARCHIVO_ELEGIDO-'].update(nombre_archivo[-1])
+    if event == 'Ok':
+        texto_a_convertir = values['-INPUT_TEXT-']
+        window_buscar_archivo['-ARCHIVO_ELEGIDO-'].update(texto_a_convertir)
+        
     if event == 'Continuar':
+        if texto_a_convertir:
+            texto_elegido = texto_a_convertir
+            break
         if values['-FILE-']:  
               # if something is highlighted in the list
             archivo_elegido = values['-FILE-']
             break
     
 window_buscar_archivo.close()
-#print(f'You chose: {values["-FILE-"]}')
 
+#-----------------Sección para generar Qr del texto individual--------------------------------------
+if texto_elegido:
+
+    layout = [[sg.Text('Nombre del archivo: ')],
+              [sg.Input(key='-NOMBRE_ARCHIVO-'),sg.Button('Ok')]]
+
+    window_nombre_QR = sg.Window('Guardar QR', layout,element_justification="center")
+
+    while True:
+        event, values = window_nombre_QR.read()
+        if event == sg.WIN_CLOSED:
+         sys.exit("Se cerró el programa")
+        if event == "Ok":
+            nombre_archivo = values['-NOMBRE_ARCHIVO-']            
+            break
+
+    imagen = qrcode.make(str(texto_elegido))
+    f = open("./resultados/" + nombre_archivo + ".png","wb")   
+    imagen.save(f)
+    f.close()   
+    sys.exit("Fin del programa") 
+#---------------------------------------------------------------------------------------------------
 #Leer datos del archivo desde la ruta seleccionada por el usuario
 nombre_archivo, extension = os.path.splitext(str(archivo_elegido))
 
