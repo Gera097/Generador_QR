@@ -8,7 +8,7 @@ import os,qrcode,sys
 #Tipo de archivos que admitimos para lectura
 FILETYPES = (("Libro de Excel", "*.xlsx"),("Archivo CSV", "*.csv")) 
 
-#Recipe - Get Filename With No Input Display. Returns when file selected
+#Pantalla de inicio
 sg.theme()
 
 layout = [[sg.Text('Introduce el texto que deseas covertir en QR: ')],

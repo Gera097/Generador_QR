@@ -1,0 +1,1 @@
+#Funciones para manejar las ventanas de forma más clara
